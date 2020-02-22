@@ -11,17 +11,17 @@ sys.path.append("/home/lnr-ai/github_repos/fxcm/")
 import os
 os.chdir('/home/lnr-ai/github_repos/eximia/')
 import pandas as pd
-import logging
+# import logging
 import numpy as np
-import calendar
+# import calendar
 import datetime as datetime
-from datetime import datetime as dt
-from pandas import Timestamp
-from pandas.tseries.offsets import BDay
-from fxcm_timezone_lib import london_timestamp, ny_timestamp, jhb_timestamp
+# from datetime import datetime as dt
+# from pandas import Timestamp
+# from pandas.tseries.offsets import BDay
+# from fxcm_timezone_lib import london_timestamp, ny_timestamp, jhb_timestamp
 #from datetime import datetime
 import sys
-from datetime import datetime
+# from datetime import datetime
 MP_DUKA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
 MP_EXIMIA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
 #%%
@@ -85,7 +85,7 @@ def ema_image_fn(series):
 MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
 f=date_f()
 g=datestamp_f()
-eximia_df['gmt_datetime']=eximia_df['Gmt time'].apply(g)
+# eximia_df['gmt_datetime']=eximia_df['Gmt time'].apply(f)
 # g=datetime.strptime(t, MP_EXIMIA_DATETIME_FORMAT)
 eximia_df['datetime'] =  pd.to_datetime(eximia_df.date, format=MP_FXCM_DATETIME_FORMAT)
 eximia_df['date'] = eximia_df['datetime'].apply(f) # day-of-the-year
