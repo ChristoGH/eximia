@@ -1,7 +1,21 @@
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+
+*.pdf
+*.zip
+*.png
+*.h5
+*.csv
+
+data/
+models/
+graphs/
+
+zips/
 
 # C extensions
 *.so
