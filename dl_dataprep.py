@@ -9,7 +9,7 @@ Created on Sat Feb 15 12:17:51 2020
 import sys
 sys.path.append("/home/lnr-ai/github_repos/fxcm/")
 import os
-os.chdir('/home/lnr-ai/github_repos/eximia/')
+os.chdir('/media/lnr-ai/christo/github_repos/eximia/')
 import pandas as pd
 # import logging
 import numpy as np
@@ -24,10 +24,19 @@ import sys
 # from datetime import datetime
 MP_DUKA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
 MP_EXIMIA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
+MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
 #%%
 eximia_candles_filename = 'data/USDZAR_Candlestick_5_M_BID_01.01.2019-08.02.2020_wrangled.csv'
 eximia_df=pd.read_csv(eximia_candles_filename)
-list(eximia_df)
+# list(eximia_df)
+# f=date_f()
+# g=datestamp_f()
+# eximia_df['gmt_datetime']=eximia_df['Gmt time'].apply(f)
+eximia_df['gmt_datetime'] =  pd.to_datetime(eximia_df['Gmt time'], format=MP_DUKA_DATETIME_FORMAT)
+# g=datetime.strptime(t, MP_EXIMIA_DATETIME_FORMAT)
+eximia_df['datetime'] =  pd.to_datetime(eximia_df.date, format=MP_FXCM_DATETIME_FORMAT)
+eximia_df['date'] = eximia_df['datetime'].apply(f) # day-of-the-year
+eximia_df['date'] = pd.to_datetime(eximia_df.date, format=MP_FXCM_DATETIME_FORMAT).apply(f)
 #%% Load user-defined functions
 
 def datestamp_f(): return lambda x: datetime.strptime(x, MP_EXIMIA_DATETIME_FORMAT)
@@ -89,39 +98,6 @@ def ema_df_fn(series, name):
       ema_output=ema(s=series, n=n+1)      
       output_dict[name+'_'+str(n+1)]=ema_output[-1]
    return(output_dict)
-
-   
-#%%
-# MP_EXIMIA_DATETIME_FORMAT
-MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
-f=date_f()
-g=datestamp_f()
-# eximia_df['gmt_datetime']=eximia_df['Gmt time'].apply(f)
-eximia_df['gmt_datetime'] =  pd.to_datetime(eximia_df['Gmt time'], format=MP_DUKA_DATETIME_FORMAT)
-# g=datetime.strptime(t, MP_EXIMIA_DATETIME_FORMAT)
-eximia_df['datetime'] =  pd.to_datetime(eximia_df.date, format=MP_FXCM_DATETIME_FORMAT)
-eximia_df['date'] = eximia_df['datetime'].apply(f) # day-of-the-year
-eximia_df['date']=pd.to_datetime(eximia_df.date, format=MP_FXCM_DATETIME_FORMAT).apply(f)
-
-s=(max(eximia_df['date'][1:10])-min(eximia_df['date'][1:10]))!=0
-
-def same_day_fn(trade_period):
-   return max(trade_period).day-min(trade_period).day==0
-
-# trade_period=[datetime.strptime(t, MP_FXCM_DATETIME_FORMAT) for t in eximia_df['timestamp'][1:3]]
-# trade_df=eximia_df[eximia_df['gmt_datetime'].isin(trade_period)]
-# This is the close of the last Candle of the period
-# trade_close=list(trade_df.close)[-1]
-# we trade at the close of the candle:
-# entry_price=eximia_df['close'][0]
-# This is the HIGH of the entry candle:
-# entry_high=eximia_df['high'][0]
-# This is the high of the last candle:
-# trade_df['close']>entry_high
-# trade_df['low']>entry_price
-# trade_df['high'][0:-1]<trade_close
-# list(trade_df.low)[-1]>entry_high
-# max(m).day-min(m).day
 
 #%%-Verify the mechanics:
 
@@ -187,10 +163,10 @@ for index, (entry_time, entry_high, entry_low, entry_close, exit_time, exit_high
 #%% Save images to a pickle file:
 import pickle
 fname='USDZAR_Candlestick_5_M_BID_01.01.2019-08.02.2020_imaged'
-f = open("/home/lnr-ai/github_repos/eximia/data/{fname}.pkl".format(fname=fname),"wb")
+f = open("/media/lnr-ai/christo/github_repos/eximia/data/{fname}.pkl".format(fname=fname),"wb")
 pickle.dump(image_dict,f)
 f.close()  
-image_dict = pickle.load( open( "/home/lnr-ai/github_repos/eximia/data/{fname}.pkl".format(fname=fname), "rb" ) )  
+image_dict = pickle.load( open( "data/{fname}.pkl".format(fname=fname), "rb" ) )  
 #%% prep market dataframes:
 """
 Some notes:

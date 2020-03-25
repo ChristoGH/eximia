@@ -21,13 +21,26 @@ from datetime import datetime as dt
 from pandas import Timestamp
 from pandas.tseries.offsets import BDay
 from fxcm_timezone_lib import london_timestamp, ny_timestamp, jhb_timestamp
-#from datetime import datetime
+import pickle
 import sys
-
+# from datapreplib import 
 MP_DUKA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
-
+MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
+MP_EXIMIA_DATETIME_FORMAT='%d.%m.%Y %H:%M:%S.%f'
 #%%
 
+def pkl_dump(df, fname, data_path):
+   f = open("{data_path}{fname}.pkl".format(fname=fname,data_path=data_path),"wb")
+   pickle.dump(df,f)
+   f.close()
+   return
+
+def pkl_load(fname, data_path):
+   return pickle.load( open( "{data_path}{fname}.pkl".format(fname=fname, data_path=data_path), "rb" ) )  
+
+
+
+#%%
 def universaldf_fn():
    universaldf=pd.DataFrame()
    universaldf['day']=range(1,36)
@@ -279,13 +292,13 @@ def fdict_fn():
     'doy_f':'%j',
     'wny':'%U'}
 
-def eximia_wrangle_fn(fxcm_df):
+def eximia_wrangle_fn(fxcm_df,DATETIME_FORMAT):
    # fxcm_df=data.copy()
    fxcm_df.reset_index(inplace=True)
-   MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
+   # MP_FXCM_DATETIME_FORMAT='%Y-%m-%d %H:%M:%S'
    fdict=fdict_fn()
    fxcm_df=fxcm_candles_OHLC(fxcm_df)
-   fxcm_df=datetime_fxcm_df(df=fxcm_df, format_str=MP_FXCM_DATETIME_FORMAT)
+   fxcm_df=datetime_fxcm_df(df=fxcm_df, format_str=DATETIME_FORMAT)
    fxcm_df=column_fn(df=fxcm_df, target_column_str='period', from_column_str='datetime', f_str=fdict['period_f'])
    fxcm_df=column_fn(df=fxcm_df, target_column_str='dom', from_column_str='datetime', f_str=fdict['dom_f'])
    fxcm_df=column_fn(df=fxcm_df, target_column_str='awdn', from_column_str='datetime', f_str=fdict['awdn_f'])
@@ -375,8 +388,8 @@ def save_candles_fn(tick_symbol, filename, new_candles):
 #print(common)
 #new_df=m30_df[(~m30_df.index.isin(common.index))&(~m30_df.index.isin(common.index))]
 
-def duka_tick_prep_fn(dukas_df):
-   dukas_df['date'] =  pd.to_datetime(dukas_df['Gmt time'], format=MP_DUKA_DATETIME_FORMAT)
+def duka_tick_prep_fn(dukas_df, DATETIME_FORMAT):
+   dukas_df['date'] =  pd.to_datetime(dukas_df['Gmt time'], format=DATETIME_FORMAT)
    dukas_df['bidopen']=dukas_df['Open']
    dukas_df['bidclose']=dukas_df['Close']
    dukas_df['bidhigh']=dukas_df['High']
@@ -390,19 +403,3 @@ def duka_tick_prep_fn(dukas_df):
    return dukas_df
 
 #%%
-eximia_candles_filename = 'data/USDZAR_Candlestick_5_M_BID_01.01.2019-08.02.2020'
-# log_filename = 'data/logging_fxcm_candles.log'
-tick_symbol='USD/ZAR'
-# config_file='/home/lnr-ai/github_repos/fxcm/config/fxcm.cfg'
-# period='m30'
-# nhistory=3000
-# logging.basicConfig(format='%(asctime)s %(message)s', filename=log_filename, level=logging.DEBUG)
-#logging.debug('This message should go to the log file')
-#logging.info('So should this')
-#logging.warning('And this, too')
-#logging.error('This is an error message')
-
-data=pd.read_csv(eximia_candles_filename+'.csv')   
-data=duka_tick_prep_fn(data)
-eximia_df=eximia_wrangle_fn(data)
-eximia_df.to_csv(eximia_candles_filename+'_wrangled'+ '.csv')  

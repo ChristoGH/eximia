@@ -62,6 +62,7 @@ fname='USDZAR_Candlestick_5_M_BID_01.01.2019-08.02.2020_output_df.csv'
 output_df.to_csv(path_or_buf='data/{fname}'.format(fname=fname), index=False)
 
 output_df=pd.read_csv(filepath_or_buffer='/media/lnr-ai/christo/github_repos/eximia/data/{fname}'.format(fname=fname))
+
 output_df[list(output_df)].describe()
 {k:image_dict[k] for k in range(1000)}
 
